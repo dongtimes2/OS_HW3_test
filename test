@@ -1,0 +1,63 @@
+#!/bin/bash
+#제작자 : B731165(유동하)
+#제작년도 : 2021
+
+gcc=~/os3/hw3/gcc.trace
+gcc10=~/os3/hw3/gcc10.trace
+gcc100=~/os3/hw3/gcc100.trace
+swim=~/os3/hw3/swim.trace
+sixpack=~/os3/hw3/sixpack.trace
+ran0=~/os3/hw3/random0.trace
+ran2=~/os3/hw3/random2.trace
+bzip10=~/os3/hw3/bzip10.trace
+bzip100=~/os3/hw3/bzip100.trace
+bzip=~/os3/hw3/bzip.trace
+
+array=("$gcc" "$gcc10" "$gcc100" "$swim" "$sixpack" "$ran0" "$ran2" "$bzip" "$bzip10" "$bzip100" "$bzip")
+traceLength="$(($RANDOM% 12 +1))"
+traceArray=()
+
+for ((var=1; var <=$1; var++))
+do
+    traceLength="$(($RANDOM% 12 +1))"
+    traceArray=()
+
+    for ((var2=1; var2<=$traceLength; var2++))
+    do
+        traceArray+="${array[$(($RANDOM% 9 +1))]} "
+    done
+
+    echo "적용할 trace"
+    echo $traceArray
+    echo
+
+    first="$(($RANDOM% 4))"
+    second="$(($RANDOM% 20 +1))"
+    third="$(($RANDOM% 21+12))"
+
+
+    echo "$var-번째 test $first $second $third"
+
+    userStartTime=$(date +%s)
+    ./a.out $first $second $third $traceArray > t2.out
+    userEndTime=$(date +%s)
+
+    simStartTime=$(date +%s)
+    ./memsim $first $second $third $traceArray > t1.out
+    simEndTime=$(date +%s)
+
+    echo "user Time is $(($userEndTime - $userStartTime))"
+    echo "sim Time is $(($simEndTime - $simStartTime))"
+
+    diff t1.out t2.out > /dev/null 2>&1
+    error=$?
+
+    if [ $error -eq 0 ]
+    then
+        echo ok
+    else
+        echo error
+    fi
+
+    echo
+done
